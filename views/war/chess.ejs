@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+	<title>Web chess</title>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	<style>
+			canvas {
+				cursor: default;
+				outline: none;
+			}
+		</style>
+</head>
+<body>
+		<%- include ../header.ejs %>
+		<div align="center" id="embed-fr.alex.chess.GwtDefinition" class="gameid-<%= gameid %> playerid-<%= playerid %>"></div>
+		<script type="text/javascript" src="/fr.alex.chess.GwtDefinition/fr.alex.chess.GwtDefinition.nocache.js"></script>
+</body>
+<script>
+		function handleMouseDown(evt) {
+		  evt.preventDefault();
+		  evt.stopPropagation();
+		  evt.target.style.cursor = 'default';
+		}
+		
+		function handleMouseUp(evt) {
+		  evt.preventDefault();
+		  evt.stopPropagation();
+		  evt.target.style.cursor = '';
+		}
+		
+		document.getElementById('embed-fr.alex.chess.GwtDefinition').addEventListener('mousedown', handleMouseDown, false);
+		document.getElementById('embed-fr.alex.chess.GwtDefinition').addEventListener('mouseup', handleMouseUp, false);
+	</script>
+</html>
