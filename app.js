@@ -2,7 +2,7 @@
  * Module dependencies.
  */
 
-var express = require('express'), http = require('http'), path = require('path'),passport = require('passport'), flash = require('connect-flash'), configDB = require('./config/database.js');
+var express = require('express'), http = require('http'), path = require('path'), passport = require('passport'), flash = require('connect-flash'), configDB = require('./config/database.js');
 var app = express();
 app.mongoose = require('mongoose');
 
@@ -65,10 +65,9 @@ wsServer.on('request', function(request) {
 					connectionPlayerId = data.playerid;
 				}
 				chess.reveive(data, connection, iCo);
+			} catch (ex) {
+				console.log('Received none json datas' + ex);
 			}
-			catch (ex) {
-				console.log('Received none json datas');
-		    }
 		}
 	});
 

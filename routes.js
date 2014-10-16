@@ -9,7 +9,11 @@ module.exports = function(app, passport) {
 	// HOME PAGE (with login links) ========
 	// =====================================
 	app.get('/', function(req, res) {
-		res.render('index.ejs'); // load the index.ejs file
+		if (req.isAuthenticated()) {
+			res.render('home.ejs');
+		} else {
+			res.render('index.ejs'); // load the index.ejs file
+		}
 	});
 
 	// =====================================
@@ -161,16 +165,24 @@ module.exports = function(app, passport) {
 		});
 	});
 
-	app.get('/games', function(req, res) {
-		games.list(function(games) {
-			res.render('games.ejs', {
+	app.get('/games', isLoggedIn, function(req, res) {
+		games.findExceptPlayer(req.user.player, function(games) {
+			res.render('games/games.ejs', {
+				games : games
+			});
+		});
+	});
+
+	app.get('/mygames', isLoggedIn, function(req, res) {
+		games.findByPlayer(req.user.player, function(games) {
+			res.render('games/mygames.ejs', {
 				games : games
 			});
 		});
 	});
 
 	app.get('/games/create', function(req, res) {
-		res.render('game-create.ejs', {
+		res.render('games/game-create.ejs', {
 			games : games
 		});
 	});
@@ -202,7 +214,26 @@ module.exports = function(app, passport) {
 	app.get('/game/create/:pseudo', games.create);
 	app.get('/game/open', games.findOpen);
 	app.get('/game/connect/:gameid/:pseudo', games.connect);
-	app.get('/game/moves/:gameid', chess.moves);
+
+	app.get('/chess/getmoves', function(req, res) {
+		console.log(req.query.gameid);
+		chess.moves(req.query.gameid, function(moves) {
+			/*res.writeHead(200, {
+				'Content-Type' : 'application/json'
+			});*/
+			res.send(moves);
+		});
+	});
+
+	app.get('/chess/getmove', function(req, res) {
+		chess.getMove(req.query.gameid, req.query.index, function(move) {
+			res.send(move);
+		});
+	});
+
+	app.post('/chess/putmove', function(req, res) {
+		chess.putMove(req.boby.index, req.boby.start, req.boby.end, req.boby.promote, req.boby.gameId, req.boby.playerId);
+	});
 };
 
 // route middleware to make sure a user is logged in

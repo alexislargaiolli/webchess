@@ -12,7 +12,7 @@ exports.create = function(playerid, callback) {
 	Player.findOne({
 		pseudo : playerid
 	}, function(error, player) {
-		if(error){
+		if (error) {
 			throw error;
 		}
 		var game = new Game({
@@ -56,29 +56,45 @@ exports.connect = function(req, res) {
 	});
 };
 
-exports.findOpen = function(req, res) {
+exports.findOpen = function(callback) {
 	Game.find({
 		state : 1
 	}, function(err, games) {
-		res.send(games);
+		if (err) {
+			throw err;
+		}
+		callback(games);
 	});
 };
 
-exports.findByPlayer = function(req, res) {
-	Player.findOne({
-		pseudo : req.params.pseudo
-	}, function(error, player) {
-		if (error) {
-			throw error;
+exports.findByPlayer = function(playerId, callback) {
+	Game.find({
+		$or : [ {
+			creator : playerId
+		}, {
+			opponent : playerId
+		} ]
+	}).populate('creator').exec(function(err, games) {
+		if (err) {
+			throw err;
 		}
-		Game.find({
-			$or : [ {
-				creator : player._id
-			}, {
-				opponent : player._id
-			} ]
-		}, function(err, games) {
-			res.send(games);
-		});
+		callback(games);
+	});
+};
+
+exports.findExceptPlayer = function(playerId, callback) {
+	Game.find({
+		$and : [ {
+			creator : {
+				$ne : playerId
+			}
+		}, {
+			state : 1
+		} ]
+	}).populate('creator').exec(function(err, games) {
+		if (err) {
+			throw err;
+		}
+		callback(games);
 	});
 };
